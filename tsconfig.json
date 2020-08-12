@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"alwaysStrict": true,
+		"experimentalDecorators": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noImplicitAny": false,
+		"outDir": "build",
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"target": "es2019"
+	},
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"node_modules",
+	]
+}
