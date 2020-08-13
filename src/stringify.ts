@@ -95,23 +95,32 @@ export const stringify = function (data: unknown): string {
 		return 'null';
 	}
 
-	if (typeof data === 'boolean') {
+	if (
+		typeof data === 'boolean' ||
+		data instanceof Boolean
+	) {
 		return `${data}`;
 	}
 
-	if (typeof data === 'number') {
+	if (
+		typeof data === 'number' ||
+		data instanceof Number
+	) {
 		if (
 			data === Infinity ||
 			data === -Infinity ||
-			(isNaN(data) === true)) {
+			(isNaN(data as number) === true)) {
 			return 'null';
 		}
 
-		return `${data}`;
+		return data.valueOf ? data.valueOf().toString() : `${data}`;
 	}
 
-	if (typeof data === 'string') {
-		return quote(data);
+	if (
+		typeof data === 'string' ||
+		data instanceof String
+	) {
+		return quote(data.toString());
 	}
 
 	if (data instanceof Function) {
@@ -123,7 +132,7 @@ export const stringify = function (data: unknown): string {
 	}
 
 	if (data instanceof Date) {
-		return `"${data.toISOString()}"`;
+		return quote(data.toISOString());
 	}
 
 	return stringifyObject(data as { [key: string]: unknown });
