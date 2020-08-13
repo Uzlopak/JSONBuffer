@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from "fs";
 
 describe("stringify", async () => {
 
-	const testCases: any[] = [
+	const testCases: unknown[] = [
 		null,
 		Infinity,
 		-Infinity,
@@ -13,6 +13,7 @@ describe("stringify", async () => {
 		true,
 		false,
 		"test",
+		"漢字",
 		2,
 		{},
 		{ a: "test" },
@@ -31,10 +32,18 @@ describe("stringify", async () => {
 		});
 	}
 
-	const files = readdirSync(__dirname + "/../../JSONTestSuite/test_parsing/");
-	for (const i in files) {
-		const content = readFileSync(__dirname + "/../../JSONTestSuite/test_parsing/" + files[i], "utf8");
-		it(files[i], () => {
+	const filesTestParsing = readdirSync(__dirname + "/../../JSONTestSuite/test_parsing/");
+	for (const i in filesTestParsing) {
+		const content = readFileSync(__dirname + "/../../JSONTestSuite/test_parsing/" + filesTestParsing[i], "utf8");
+		it(filesTestParsing[i], () => {
+			expect(stringify(content)).to.be.equal(JSON.stringify(content));
+		});
+	}
+
+	const filesTestTransforms = readdirSync(__dirname + "/../../JSONTestSuite/test_transform/");
+	for (const i in filesTestTransforms) {
+		const content = readFileSync(__dirname + "/../../JSONTestSuite/test_transform/" + filesTestTransforms[i], "utf8");
+		it(filesTestTransforms[i], () => {
 			expect(stringify(content)).to.be.equal(JSON.stringify(content));
 		});
 	}

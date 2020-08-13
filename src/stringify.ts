@@ -8,14 +8,64 @@ const escapeCharacters = {
 	9: "\\t"
 };
 
-const unicodePrefix = "\\u00";
-
 // eslint-disable-next-line no-control-regex
 const reEscape = /[\x00-\x1f\x22\x5c]/g;
 
-function escapeChar(character: string) {
+function escapeChar(character: string): string {
 	return escapeCharacters[character.charCodeAt(0)] ||
-		unicodePrefix + character.charCodeAt(0).toString(16).padStart(2, "0");
+		"\\u00" + character.charCodeAt(0).toString(16).padStart(2, "0");
+}
+
+function stringifyArray(data: unknown[]): string {
+	if (data.length === 0) {
+		return '[]';
+	}
+
+	let str = '[';
+
+	const dl = data.length;
+
+	for (let d = 0; d < dl; d++) {
+
+		str += stringify(data[d]);
+
+		if (d < dl - 1) {
+			str += ',';
+		}
+	}
+
+	str += ']';
+
+	return str;
+}
+
+function stringifyObject(data: unknown): string {
+	const keys = Object.keys(data);
+	if (keys.length === 0) {
+
+		return '{}';
+
+	}
+
+	let str = '{';
+
+	const kl = keys.length;
+
+	for (let k = 0; k < kl; k++) {
+
+		const key = keys[k];
+
+		if (data[key]) {
+			str += '"' + key + '":' + stringify(data[key]);
+
+			if (k < kl - 1) {
+				str += ',';
+			}
+		}
+	}
+
+	str += '}';
+	return str;
 }
 
 export const stringify = function (data: unknown): string {
@@ -50,59 +100,17 @@ export const stringify = function (data: unknown): string {
 			: `"${data}"`;
 	}
 
-	if (typeof data === 'function') {
+	if (data instanceof Function) {
 		return undefined;
 	}
 
 	if (data instanceof Array) {
-
-		if (data.length === 0) {
-			return '[]';
-		}
-
-		let str = '[';
-
-		for (let d = 0, dl = data.length; d < dl; d++) {
-
-			str += stringify(data[d]);
-
-			if (d < dl - 1) {
-				str += ',';
-			}
-		}
-
-		str += ']';
-
-		return str;
-
+		return stringifyArray(data);
 	}
 
 	if (data instanceof Date) {
 		return `"${data.toISOString()}"`;
 	}
 
-	const keys = Object.keys(data);
-	if (keys.length === 0) {
-
-		return '{}';
-
-	}
-
-	let str = '{';
-
-	for (let k = 0, kl = keys.length; k < kl; k++) {
-
-		const key = keys[k];
-
-		if (data[key]) {
-			str += '"' + key + '":' + stringify(data[key]);
-
-			if (k < kl - 1) {
-				str += ',';
-			}
-		}
-	}
-
-	str += '}';
-	return str;
+	return stringifyObject(data);
 };
