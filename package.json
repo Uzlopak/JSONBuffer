@@ -7,7 +7,7 @@
 		"test": "npm run build-only && npm run test-with-coverage",
 		"test-with-coverage": "rimraf ./coverage && nyc mocha --require chai-autoload-plugins --color --exit --timeout 120000 --recursive ./build/spec && rimraf ./.nyc_output",
 		"test-mocha": "mocha --require chai-autoload-plugins --color --exit --timeout 120000 --recursive ./build/spec",
-		"test-tsmocha": "ts-mocha --require chai-autoload-plugins --color --exit --timeout 120000 --recursive './src/spec/**/*.ts' --preserve-symlinks",
+		"test-tsmocha": "ts-mocha --require chai-autoload-plugins --color --exit --timeout 120000 --recursive './src/spec/*.ts' --preserve-symlinks",
 		"build": "npm run build-only && npm run test-with-coverage",
 		"build-only": "rimraf ./build && npm run tsc",
 		"tsc": "tsc -p .",

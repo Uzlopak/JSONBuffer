@@ -1,19 +1,31 @@
-const escapeCharacters = {
-	92: "\\\\",
-	34: '\\"',
-	8: "\\b",
-	12: "\\f",
-	10: "\\n",
-	13: "\\r",
-	9: "\\t"
-};
+const escapeCharacters: { [key: string]: string } = {};
+
+escapeCharacters[String.fromCharCode(92)] = "\\\\";
+escapeCharacters[String.fromCharCode(34)] = "\\\"";
+escapeCharacters[String.fromCharCode(8)] = "\\b";
+escapeCharacters[String.fromCharCode(12)] = "\\f";
+escapeCharacters[String.fromCharCode(10)] = "\\n";
+escapeCharacters[String.fromCharCode(13)] = "\\r";
+escapeCharacters[String.fromCharCode(9)] = "\\t";
 
 // eslint-disable-next-line no-control-regex
-const reEscape = /[\x00-\x1f\x22\x5c]/g;
+const escapable = /[\\"\x00-\x1F]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
 
-function escapeChar(character: string): string {
-	return escapeCharacters[character.charCodeAt(0)] ||
-		"\\u00" + character.charCodeAt(0).toString(16).padStart(2, "0");
+function quote(value: string): string {
+
+	// If the string contains no control characters, no quote characters, no
+	// backslash characters, and no lone surrogates, then we can safely
+	// slap some quotes around it. Otherwise we must also replace the
+	// offending characters with safe escape sequences.
+
+	escapable.lastIndex = 0;
+	return escapable.test(value) ?
+		'"' + value.replace(escapable, function (a) {
+			const c = escapeCharacters[a];
+			return typeof c === 'string' ? c :
+				'\\u' + a.charCodeAt(0).toString(16).padStart(4, '0');
+		}) + '"' :
+		'"' + value + '"';
 }
 
 function stringifyArray(data: unknown[]): string {
@@ -39,7 +51,12 @@ function stringifyArray(data: unknown[]): string {
 	return str;
 }
 
-function stringifyObject(data: unknown): string {
+function stringifyObject(data: { [key: string]: unknown }): string {
+
+	if (typeof data.toJSON === "function") {
+		return data.toJSON();
+	}
+
 	const keys = Object.keys(data);
 	if (keys.length === 0) {
 
@@ -94,10 +111,7 @@ export const stringify = function (data: unknown): string {
 	}
 
 	if (typeof data === 'string') {
-
-		return reEscape.test(data)
-			? `"${data.replace(reEscape, escapeChar)}"`
-			: `"${data}"`;
+		return quote(data);
 	}
 
 	if (data instanceof Function) {
@@ -112,5 +126,5 @@ export const stringify = function (data: unknown): string {
 		return `"${data.toISOString()}"`;
 	}
 
-	return stringifyObject(data);
+	return stringifyObject(data as { [key: string]: unknown });
 };
