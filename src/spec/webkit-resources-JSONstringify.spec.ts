@@ -248,35 +248,30 @@ function createTests(): ((json: any) => string)[] {
 
 	// 34
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = [];
 		return jsonObject.stringify({ a: "1", b: "2", c: "3", 5: 4, 4: 5, 2: 6, 1: 7 }, array);
 	});
 
 	// 35
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = ["a"];
 		return jsonObject.stringify({ get a() { return 1; array[1] = "b"; array[2] = "c" }, b: "2", c: "3" }, array);
 	});
 
 	// 36
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = [{ toString: function () { array[0] = 'a'; array[1] = 'c'; array[2] = 'b'; return 'a' } }];
 		return jsonObject.stringify(simpleObject, array);
 	});
 
 	// 37
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = [{ toString: function () { array[0] = 'a'; array[1] = 'c'; array[2] = 'b'; return 'a' } }];
 		return jsonObject.stringify(simpleObjectWithProto, array);
 	});
 
 	// 38
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = [1, new Number(2), NaN, Infinity, -Infinity, new String("str")];
 		return jsonObject.stringify({ "1": "1", "2": "2", "NaN": "NaN", "Infinity": "Infinity", "-Infinity": "-Infinity", "str": "str" }, array);
 	});
@@ -284,14 +279,12 @@ function createTests(): ((json: any) => string)[] {
 
 	// 39
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = ["1", "2", "3"];
 		return jsonObject.stringify({ 1: 'a', 2: 'b', 3: 'c' }, array);
 	});
 
 	// 40
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = ["1", "2", "3"];
 		return jsonObject.stringify(simpleArray, array);
 	});
@@ -401,7 +394,6 @@ function createTests(): ((json: any) => string)[] {
 
 	// 61
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = ["1", "2", "3"];
 		return jsonObject.stringify(simpleArrayWithProto, array);
 	});
@@ -562,7 +554,6 @@ function createTests(): ((json: any) => string)[] {
 
 	// 89
 	result.push(function (jsonObject) {
-		let allString = true;
 		let array = [{ toString: function () { array[0] = 'a'; array[1] = 'c'; array[2] = 'b'; return 'a' } }, 'b', 'c'];
 		return jsonObject.stringify(simpleObject, array);
 	});
@@ -819,6 +810,8 @@ describe("webkit-resources-JSONstringify", () => {
 			59,
 			60,
 			61,
+
+			// unit tests for using the width parameter
 			62,
 			63,
 			64,
@@ -838,6 +831,7 @@ describe("webkit-resources-JSONstringify", () => {
 			78,
 			79,
 			80,
+
 			84,
 			85,
 			86,
