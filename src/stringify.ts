@@ -1,12 +1,12 @@
 const escapeCharacters: { [key: string]: string } = {};
 
-escapeCharacters[String.fromCharCode(92)] = "\\\\";
-escapeCharacters[String.fromCharCode(34)] = "\\\"";
 escapeCharacters[String.fromCharCode(8)] = "\\b";
-escapeCharacters[String.fromCharCode(12)] = "\\f";
-escapeCharacters[String.fromCharCode(10)] = "\\n";
-escapeCharacters[String.fromCharCode(13)] = "\\r";
 escapeCharacters[String.fromCharCode(9)] = "\\t";
+escapeCharacters[String.fromCharCode(10)] = "\\n";
+escapeCharacters[String.fromCharCode(12)] = "\\f";
+escapeCharacters[String.fromCharCode(13)] = "\\r";
+escapeCharacters[String.fromCharCode(34)] = "\\\"";
+escapeCharacters[String.fromCharCode(92)] = "\\\\";
 
 // eslint-disable-next-line no-control-regex
 const escapable = /[\\"\x00-\x1F]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
