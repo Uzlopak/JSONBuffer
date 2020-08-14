@@ -1,4 +1,6 @@
-const numberRE = /^\d+$/;
+const numberPreRE = /^[\d.eE+-]+$/;
+const numberRE = /^-?(\d+)(\.?\d*)$/;
+const scientificNumberRE = /^-?(\d+)(\.?\d*)([eE][-+]?\d+)$/;
 
 export function parse(value: string): unknown {
 	const stack = [];
@@ -8,9 +10,9 @@ export function parse(value: string): unknown {
 	if (value === 'false') return false;
 	if (value === 'undefined') return undefined;
 	if (value === 'null') return null;
-	if (numberRE.test(value)) return Number(value);
 	if (value[0] === '[') return parseArray(value, stack);
 	if (value[0] === '{') return parseObject(value, stack);
+	if (numberPreRE.test(value) && (numberRE.test(value) || scientificNumberRE.test(value))) return Number(value);
 
 	throw new SyntaxError();
 }
