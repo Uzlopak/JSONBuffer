@@ -1,5 +1,6 @@
 import { parse } from "../parse";
 import { expect } from "chai";
+import { readdirSync, readFileSync } from "fs";
 
 describe("parse", async () => {
 
@@ -18,6 +19,7 @@ describe("parse", async () => {
 		"1e+10",
 		"23",
 		"{}",
+		"\"\\\\n\"",
 		"{\"a\":\"test\"}",
 		"{\"a\":\"test\",\"b\":\"test\"}",
 		"{\"a\":{\"a\":\"test\"},\"b\":\"test\"}",
@@ -30,4 +32,34 @@ describe("parse", async () => {
 			expect(parse(testCases[i]), testCases[i]).to.be.eql(JSON.parse(testCases[i]));
 		});
 	}
+	return;
+
+	const filesTestParsing = readdirSync(__dirname + "/../../JSONTestSuite/test_parsing/");
+	for (const i in filesTestParsing) {
+		const content = readFileSync(__dirname + "/../../JSONTestSuite/test_parsing/" + filesTestParsing[i], "utf8");
+
+		if (filesTestParsing[i].charAt(0) === "n") {
+			it(filesTestParsing[i], () => {
+				expect(function () { JSON.parse(content); }).to.throw();
+				expect(function () { parse(content); }).to.throw();
+			});
+		} else if (filesTestParsing[i].charAt(0) === "y") {
+			try {
+				JSON.parse(content);
+				it(filesTestParsing[i], () => {
+					expect(parse(content)).to.be.eql(JSON.parse(content));
+				});
+			} catch (e) {
+				it(filesTestParsing[i], () => {
+					expect(function () { JSON.parse(content); }).to.throw();
+					expect(function () { parse(content); }).to.throw();
+				});
+			}
+		} else {
+			it(filesTestParsing[i], () => {
+				expect(parse(content)).to.be.eql(JSON.parse(content));
+			});
+		}
+	}
+
 });
