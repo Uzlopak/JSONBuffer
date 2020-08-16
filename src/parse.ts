@@ -5,9 +5,15 @@ const scientificNumberRE = /^-?(\d+?)(\.?\d*?)([eE][-+]?\d+?)$/;
 export function parse(value: string): unknown {
 	const stack = [];
 
-	if (value[0] === '{') return parseObject(value, stack);
-	if (value[0] === '[') return parseArray(value, stack);
-	if (value[0] === '"') return parseString(value.slice(1, value.length - 1));
+	let i = 0;
+	for (; i < value.length; i++) {
+		if ([" "].includes(value[i]) === false) {
+			break;
+		}
+	}
+	if (value[i] === '{') return parseObject(value.slice(i, value.length), stack);
+	if (value[i] === '[') return parseArray(value.slice(i, value.length), stack);
+	if (value[i] === '"') return parseString(value.slice(i + 1, value.length - 1));
 	if (value === 'true') return true;
 	if (value === 'false') return false;
 	if (value === 'null') return null;
@@ -22,16 +28,40 @@ const openings = {
 	'{': '}'
 };
 
-function unicodeMatchReplacer(match: string) {
-	return String.fromCharCode(match.replace(/\\u/g, '/\\x/') as unknown as number);
+const doubleBacklashRE = /\\\\/g;
+const unicodeRE = /\\u[\da-fA-F]{4}/g;
+const unicodeREstrict = /^[\da-fA-F]{4}$/;
+
+function parseString(value: string): string {
+	return unicodeToChar(value.replace(doubleBacklashRE, "\\"));
+}
+
+const unicodeLookupMap = new Map();
+
+for (let i = 0; i < 65636; i++) {
+	unicodeLookupMap.set(`${i.toString(16).padStart(4, "0")}`, String.fromCharCode(Number(`0x${i.toString(16)}` as unknown as number)));
+}
+
+function unicodeReplacer(value: string): string {
+	let result = "";
+	for (let i = 0; i < value.length; i++) {
+		if (value[i] === "\\" && value[i + 1] === "u") {
+			const substr = value.substr(i + 2, 4);
+			if (unicodeREstrict.test(substr)) {
+				result += unicodeLookupMap.get(substr.toLowerCase());
+				i += 5;
+				continue;
+			} else {
+				throw new SyntaxError();
+			}
+		}
+		result += value[i];
+	}
+	return result;
 }
 
 function unicodeToChar(value: string): string {
-	return value.replace(/\\u[\dA-F]{4}/gi, unicodeMatchReplacer);
-}
-
-function parseString(value: string): string {
-	return String(unicodeToChar(value.replace(/\\\\/g, "\\")));
+	return unicodeRE.test(value) ? unicodeReplacer(value) : value;
 }
 
 function parseArray(value: string, stack: Array<unknown>): Array<unknown> {
