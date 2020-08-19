@@ -2,18 +2,27 @@ const numberPreRE = /^[\d.eE+-]+?$/;
 const numberRE = /^-?(\d+?)(\.?\d*?)$/;
 const scientificNumberRE = /^-?(\d+?)(\.?\d*?)([eE][-+]?\d+?)$/;
 
+const whitespaces = [
+	" ".charCodeAt(0),
+	"\n".charCodeAt(0),
+	"\t".charCodeAt(0),
+	"\r".charCodeAt(0),
+	"\b".charCodeAt(0),
+	"\f".charCodeAt(0),
+];
+
 export function parse(value: string): unknown {
 	const stack = [];
 
 	let i = 0;
 	for (; i < value.length; i++) {
-		if ([" "].includes(value[i]) === false) {
+		if (whitespaces.includes(value.charCodeAt[i]) === false) {
 			break;
 		}
 	}
 	if (value[i] === '{') return parseObject(value.slice(i, value.length), stack);
 	if (value[i] === '[') return parseArray(value.slice(i, value.length), stack);
-	if (value[i] === '"') return parseString(value.slice(i + 1, value.length - 1));
+	if (value[i] === '"') return parseString(value.slice(i, value.length));
 	if (value === 'true') return true;
 	if (value === 'false') return false;
 	if (value === 'null') return null;
@@ -33,7 +42,7 @@ const unicodeRE = /\\u[\da-fA-F]{4}/g;
 const unicodeREstrict = /^[\da-fA-F]{4}$/;
 
 function parseString(value: string): string {
-	return unicodeToChar(value.replace(doubleBacklashRE, "\\"));
+	return unicodeToChar(value.substring(1, value.length - 1).replace(doubleBacklashRE, "\\"));
 }
 
 const unicodeLookupMap = new Map();
@@ -134,3 +143,7 @@ function parseObject(value: string, stack: Array<unknown>): { [key: string]: unk
 	}
 	return output;
 }
+// T(JsonParseUnexpectedEOS, "Unexpected end of JSON input") \
+// T(JsonParseUnexpectedToken, "Unexpected token % in JSON at position %") \
+// T(JsonParseUnexpectedTokenNumber, "Unexpected number in JSON at position %") \
+// T(JsonParseUnexpectedTokenString, "Unexpected string in JSON at position %") \

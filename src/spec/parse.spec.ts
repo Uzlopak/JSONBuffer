@@ -2,7 +2,7 @@ import { parse } from "../parse";
 import { expect } from "chai";
 import { readdirSync, readFileSync } from "fs";
 
-describe.only("parse", async () => {
+describe("parse", async () => {
 
 	const testCases: string[] = [
 		"null",
