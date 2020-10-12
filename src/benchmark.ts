@@ -1,6 +1,8 @@
 import { parse } from "./parse";
 import { stringify } from "./stringify";
+import { toBuffer } from "./toBuffer";
 import * as os from 'os';
+import { serialize } from "./serialize";
 
 function systemStats(): void {
 
@@ -11,35 +13,7 @@ function systemStats(): void {
 
 systemStats();
 
-const obj = "\"\\u00b2\"";
-
-const stringifiedObj = JSON.stringify(obj);
-
-for (let r = 1; r < 4; r++) {
-	console.log("\nRun #" + r + ":");
-
-	let start = 0;
-	let stop = 0;
-	start = Date.now();
-	for (let i = 0; i < 500000; i++) {
-		JSON.parse(stringifiedObj);
-	}
-	stop = Date.now();
-	console.log("\t parse native: " + (stop - start) + " ms");
-}
-
-for (let r = 1; r < 4; r++) {
-	console.log("\nRun #" + r + ":");
-
-	let start = 0;
-	let stop = 0;
-	start = Date.now();
-	for (let i = 0; i < 500000; i++) {
-		parse(stringifiedObj);
-	}
-	stop = Date.now();
-	console.log("\t parse custom: " + (stop - start) + " ms");
-}
+const obj = "test";
 
 // for (let r = 1; r < 4; r++) {
 // 	console.log("\nRun #" + r + ":");
@@ -48,10 +22,10 @@ for (let r = 1; r < 4; r++) {
 // 	let stop = 0;
 // 	start = Date.now();
 // 	for (let i = 0; i < 500000; i++) {
-// 		JSON.stringify(obj);
+// 		JSON.parse(stringifiedObj);
 // 	}
 // 	stop = Date.now();
-// 	console.log("\t stringify native: " + (stop - start) + " ms");
+// 	console.log("\t parse native: " + (stop - start) + " ms");
 // }
 
 // for (let r = 1; r < 4; r++) {
@@ -61,8 +35,87 @@ for (let r = 1; r < 4; r++) {
 // 	let stop = 0;
 // 	start = Date.now();
 // 	for (let i = 0; i < 500000; i++) {
-// 		stringify(obj);
+// 		parse(stringifiedObj);
 // 	}
 // 	stop = Date.now();
-// 	console.log("\t stringify custom: " + (stop - start) + " ms");
+// 	console.log("\t parse custom: " + (stop - start) + " ms");
 // }
+
+for (let r = 1; r < 4; r++) {
+	console.log("\nRun #" + r + ":");
+
+	let start = 0;
+	let stop = 0;
+	start = Date.now();
+	for (let i = 0; i < 500000; i++) {
+		JSON.stringify(obj);
+	}
+	stop = Date.now();
+	console.log("\t stringify native: " + (stop - start) + " ms");
+}
+
+for (let r = 1; r < 4; r++) {
+	console.log("\nRun #" + r + ":");
+
+	let start = 0;
+	let stop = 0;
+	start = Date.now();
+	for (let i = 0; i < 500000; i++) {
+		stringify(obj);
+	}
+	stop = Date.now();
+	console.log("\t stringify custom: " + (stop - start) + " ms");
+}
+
+for (let r = 1; r < 4; r++) {
+	console.log("\nRun #" + r + ":");
+
+	let start = 0;
+	let stop = 0;
+	start = Date.now();
+	for (let i = 0; i < 500000; i++) {
+		Buffer.from(JSON.stringify(obj));
+	}
+	stop = Date.now();
+	console.log("\t stringify native and Buffer.from native: " + (stop - start) + " ms");
+}
+
+
+for (let r = 1; r < 4; r++) {
+	console.log("\nRun #" + r + ":");
+
+	let start = 0;
+	let stop = 0;
+	start = Date.now();
+	for (let i = 0; i < 500000; i++) {
+		Buffer.from(stringify(obj));
+	}
+	stop = Date.now();
+	console.log("\t stringify custom and Buffer.from native: " + (stop - start) + " ms");
+}
+
+for (let r = 1; r < 4; r++) {
+	console.log("\nRun #" + r + ":");
+
+	let start = 0;
+	let stop = 0;
+	start = Date.now();
+	for (let i = 0; i < 500000; i++) {
+		toBuffer(stringify(obj));
+	}
+	stop = Date.now();
+	console.log("\t stringify and toBuffer custom: " + (stop - start) + " ms");
+}
+
+for (let r = 1; r < 4; r++) {
+	console.log("\nRun #" + r + ":");
+
+	let start = 0;
+	let stop = 0;
+	start = Date.now();
+	for (let i = 0; i < 500000; i++) {
+		serialize(obj);
+	}
+	stop = Date.now();
+	console.log("\t serialize custom: " + (stop - start) + " ms");
+}

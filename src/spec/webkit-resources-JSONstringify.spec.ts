@@ -219,6 +219,13 @@ function createTests(): ((json: any) => string)[] {
 		return count;
 	});
 
+	// modified test, as we are running it twice
+	result.push(function (jsonObject) {
+		let count = 0;
+		jsonObject.stringify({ get Foo() { count === 0 ? count++ : count; return "bar"; } });
+		return count;
+	});
+
 	// 30
 	result.push(function (jsonObject) {
 		let count = 0;

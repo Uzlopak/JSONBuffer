@@ -1,6 +1,6 @@
 function writeString(str: string, buffer: Buffer): void {
 	let offset = 0;
-	for (let i = 0; i < str.length; i++) {
+	for (let i = 0, sl = str.length; i < sl; i++) {
 		const c = str.charCodeAt(i);
 		if (c < 128) {
 			buffer[offset++] = c;
@@ -18,7 +18,7 @@ function writeString(str: string, buffer: Buffer): void {
 function stringByteLength(str: string): number {
 	if (!str) return 0;
 	let size = 0;
-	for (let i = 0; i < str.length; i++) {
+	for (let i = 0, sl = str.length; i < sl; i++) {
 		const c = str.charCodeAt(i);
 		if (c < 128) size += 1;
 		else if (c > 127 && c < 2048) size += 2;
